@@ -31,8 +31,7 @@ use FindBin qw /$Bin/;
 use JSON;
 use plink_binary; # from gftools package
 use Exporter;
-use WTSI::NPG::Genotyping qw/read_sample_json/;
-use WTSI::NPG::Genotyping::QC::PlinkIO;
+use WTSI::NPG::Gendermix::PlinkIO;
 
 our @ISA = qw/Exporter/;
 our @EXPORT_OK = qw/$ini_path $helpText $helpTextDB processOptions run
@@ -215,6 +214,17 @@ sub readNamesXhetText {
     }
     close $in || croak "Cannot close input file $inPath: $!";
     return (\@names, \@xhets);
+}
+
+sub read_sample_json { # copied from Genotyping.pm
+  my ($file) = @_;
+
+  open(my $fh, '<', "$file")
+    or confess "Failed to open JSON file '$file' for reading: $!\n";
+  my $str = do { local $/ = undef; <$fh> };
+  close($fh) or warn "Failed to close JSON file '$file'\n";
+
+  return @{from_json($str, {utf8 => 1})};
 }
 
 sub readSampleXhet {
@@ -408,4 +418,3 @@ sub readGenderOutput {
     close $in;
     return %genders;
 }
-

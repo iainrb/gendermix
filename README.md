@@ -41,6 +41,7 @@ Software:
 * R mixtools library: http://cran.r-project.org/web/packages/mixtools/index.html
 * Perl >= v5.8.8
 * perl-dnap-utilities >= 0.4.1: https://github.com/wtsi-npg/perl-dnap-utilities
+* Plink 1.0.7
 * Gftools: https://github.com/wtsi-npg/Gftools
 
 

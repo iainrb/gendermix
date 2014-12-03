@@ -61,8 +61,8 @@ make install <installation_dir>
 --------
 
 Gendermix may be run from within Perl code using the Gendermix.pm module, or
-from the command line using the check_xhet_gender.pl or gendermix.pl scripts.
-See documentation in the individual modules and scripts for details.
+from the command line using the gendermix.pl script. See documentation in the
+Perl source files for details, or run gendermix.pl with the --help option.
 
 
 5. History

@@ -28,10 +28,12 @@ use strict;
 use Carp;
 use plink_binary; # from gftools package
 use Exporter;
-use WTSI::NPG::Genotyping::QC::QCPlotShared qw/$ini_path/;
 
 our @ISA = qw/Exporter/;
 our @EXPORT_OK = qw/checkPlinkBinaryInputs/;
+
+# FIXME temporary hack for testing
+our $ini_path = '/nfs/users/nfs_i/ib5/mygit/github/gendermix/src/perl/etc';
 
 sub checkPlinkBinaryInputs {
     # check that PLINK binary files exist and are readable
@@ -48,11 +50,12 @@ sub checkPlinkBinaryInputs {
 sub countCallsHets {
     # filter SNPs on call rate and PAR location
     # count successful calls, and het calls, for SNPs passing filters
-    my ($pb, $sampleNamesRef, $minCR, $log, $verbose, $includePar, 
-        $parPath) = @_;
+    my ($pb, $sampleNamesRef, $minCR, $log, $verbose, $includePar,
+        $configDir, $parPath) = @_;
     my ($snpTotal, $snpFail, $snpPar) = (0,0,0);
     $includePar ||= 0; # remove SNPs from pseudoautosomal regions
-    $parPath ||= $ini_path."/x_pseudoautosomal.txt";
+    $configDir ||= '.';
+    $parPath = $configDir."/x_pseudoautosomal.txt";
     my @xpar = readXPAR($parPath);
     $log ||= 0;
     if ($log) { writeSnpLogHeader($log); }
@@ -79,7 +82,7 @@ sub countCallsHets {
     }
     if ($snpTotal==0) { croak "ERROR: No valid SNPs found: $!"; } 
     elsif ($verbose) { print "$snpTotal SNPs passed, $snpPar from PARs rejected, $snpFail failed CR check\n"; }
-    return (\%allCalls, \%allHets, $snpTotal);   
+    return (\%allCalls, \%allHets, $snpTotal);
 }
 
 
@@ -101,15 +104,18 @@ sub extractChromData {
 sub findHetRates {
     # find het rates by sample for given plink binary and sample names
     # het rate defined as: successful calls / het calls for each sample, on snps satisfying min call rate
-    my ($pb, $sampleNamesRef, $log, $includePar, $minCR, $verbose) = @_;
-    $includePar = 0;
+    my ($pb, $sampleNamesRef, $log, $includePar, $configDir, $minCR,
+        $verbose) = @_;
+    $includePar ||= 0;
+    $configDir ||= '.';
     $minCR ||= 0.95;
     $log ||= 0;
     $verbose ||= 0;
     my @sampleNames = @$sampleNamesRef;
     if ($verbose) { print STDERR "Finding SNP evaluation set.\n"; }
     my ($allCallsRef, $allHetsRef, $snps) = 
-        countCallsHets($pb, $sampleNamesRef,$minCR,$log,$verbose,$includePar);
+        countCallsHets($pb, $sampleNamesRef, $minCR, $log, $verbose,
+                       $includePar, $configDir);
     if ($verbose) { 
         print STDERR $snps." SNPs found for het rate computation.\n"; 
     }

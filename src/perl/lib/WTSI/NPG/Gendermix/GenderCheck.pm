@@ -189,7 +189,7 @@ sub readPlink {
     my $snpLogPath ||=  $tempDir."/snps_gender_check.txt";
     open(my $log, ">", $snpLogPath) || 
         croak "Cannot open log path $snpLogPath: $!";
-    my %hetRates = findHetRates($pb, $nameRef, $log, $includePar);
+    my %hetRates = findHetRates($pb, $nameRef, $log, $includePar, $ini_path);
     close $log;
     my @xhets;
     foreach my $name (@$nameRef) {
